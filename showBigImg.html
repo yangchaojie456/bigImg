@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            width: 350px;
+            height: 350px;
+            margin: 100px;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+
+        .big {
+            width: 400px;
+            height: 400px;
+            position: absolute;
+            top: 0;
+            left: 360px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            display: none;
+        }
+
+        .mask {
+            width: 175px;
+            height: 175px;
+            background: rgba(255, 255, 0, 0.4);
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: move;
+            display: none;
+        }
+
+        .small {
+            position: relative;
+        }
+
+        .box img {
+            vertical-align: top;
+        }
+
+        #bigBox img {
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+<div class="box" id="box">
+    <div id="smallBox" class="small">
+        <img src="img.png" width="350" alt=""/>
+
+        <div id="mask" class="mask"></div>
+    </div>
+    <div id="bigBox" class="big">
+        <img src="img.png" width="800" alt=""/>
+    </div>
+
+    <script>
+        window.onload=function(){
+            var box = document.getElementById('box');
+            var smallBox = document.getElementById('smallBox');
+            var mask = document.getElementById('mask');
+            var bigBox = document.getElementById('bigBox');
+            var bigImg = bigBox.children[0];
+
+            // 显示隐藏
+            smallBox.onmouseover=function(){
+                mask.style.display = 'block';
+                bigBox.style.display = 'block';
+                topX = smallBox.offsetWidth - mask.offsetWidth/2;
+                topY = smallBox.offsetHeight - mask.offsetHeight/2;
+            }
+            smallBox.onmouseout=function(){
+                mask.style.display = 'none';
+                bigBox.style.display = 'none';   
+            }
+
+            // 设置空余空间
+            
+            
+            smallBox.onmousemove=function(e){
+                var pageX = e.pageX || e.clientX + document.documentElement.scrollLeft;
+                var pageY = e.pageY || e.clientY + document.documentElement.scrollTop;
+                // 计算鼠标在smallBox中的位置
+                var mX = pageX - box.offsetLeft;
+                var mY = pageY - box.offsetTop;
+
+                // 设置遮罩位置
+                var maskX = mX - mask.offsetWidth/2;
+                var maskY = mY - mask.offsetHeight/2;
+                // 控制遮罩范围
+                if(maskX<0) maskX = 0;
+                if(maskX> smallBox.offsetWidth-mask.offsetWidth) maskX = smallBox.offsetWidth-mask.offsetWidth;
+                if(maskY<0) maskY = 0;
+                if(maskY > smallBox.offsetHeight - mask.offsetHeight) maskY= smallBox.offsetHeight - mask.offsetHeight;
+
+                mask.style.left = maskX +'px';
+                mask.style.top = maskY +'px';
+                
+                // 大图片显示
+                // 小图片移动距离
+                var disSamll = smallBox.offsetWidth-mask.offsetWidth;
+                // 大图需要移动的距离
+                var disBig = bigImg.offsetWidth - bigBox.offsetWidth ;
+                // 移动比例
+                var rate = disBig/disSamll;
+
+                bigImg.style.left = -maskX*rate+'px';
+                bigImg.style.top = -maskY*rate+'px';
+            }
+        }
+    </script>
+</div>
+</body>
+</html>
